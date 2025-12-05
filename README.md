@@ -1,6 +1,6 @@
 # Rice Grain Quality Classification with Vision Transformers
 
-> Vision Transformer (MobileViT-Small) implementation for automated rice grain quality inspection achieving **96.4% validation accuracy** on multi-class classification. PyTorch-based pipeline for FCI grain assessment system.
+> Vision Transformer (MobileViT-Small) implementation for automated rice grain quality inspection achieving **96.4% validation accuracy** on multi-class classification. PyTorch-based pipeline for grain assessment system.
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-red)](https://pytorch.org/)
@@ -8,7 +8,7 @@
 
 ## 📋 Project Overview
 
-This project implements a Vision Transformer model (MobileViT-Small) for automated rice grain quality classification for the Food Corporation of India (FCI). The system processes segmented rice grain images and classifies them into multiple quality categories including Idly Rice, Damaged Grains, and other rice varieties.
+This project implements a Vision Transformer model (MobileViT-Small) for automated rice grain quality classification. The system processes segmented rice grain images and classifies them into multiple quality categories including Discolored, Chaffy, Damaged, OG, II, and other rice varieties.
 
 **Production Pipeline:**
 ```
