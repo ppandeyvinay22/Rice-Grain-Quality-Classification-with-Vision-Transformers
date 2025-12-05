@@ -1,0 +1,135 @@
+# ============================================
+# Rice Grain Classification - MobileViT Training Config
+# OPTIMIZED VERSION with Plateau Scheduler & Enhanced Augmentation
+# ============================================
+
+# Dataset Configuration
+dataset:
+  data_dir: "/data_path" # In 224*224 image size
+  test_dir: "/test_dir"
+  test_mixed_dir: "/mixed_test_dir"
+  image_size: 224  # Input size for MobileViT
+  num_classes: 14
+  classes:
+    - "B"
+    - "C"
+    - "CH"
+    - "DC"
+    - "DM"
+    - "FRK"
+    - "HK"
+    - "II"
+    - "OG"
+    - "OI"
+    - "PD"
+    - "RG"
+    - "S_BR"
+    - "T_FDM"
+
+# Model Configuration
+model:
+  name: "apple/mobilevit-small"
+  pretrained: true
+  dropout: 0.6
+
+# Training Hyperparameters
+training:
+  batch_size: 48
+  num_epochs: 100  # Reduced from 100 for focused training
+  learning_rate: 0.0002
+  weight_decay: 0.015
+  warmup_epochs: 8
+  gradient_clip_norm: 1.0  # Gradient clipping for stable training
+  
+  # Early Stopping (UPDATED)
+  early_stopping:
+    enabled: true
+    patience: 10  # Increased from 8 to allow longer plateaus
+    min_delta: 0.0005  # More sensitive to improvements
+  
+  # Class Weights
+  use_class_weights: true
+  
+  # Focal Loss
+  use_focal_loss: true
+  focal_gamma: 2.0
+  
+  # Optimizer
+  optimizer: "adamw"  # Options: adamw, adam, sgd
+  
+  # Learning Rate Scheduler (UPDATED TO PLATEAU)
+  scheduler:
+    type: "plateau"  # Changed from cosine to plateau
+    plateau_mode: "min"  # Monitor loss (min = lower is better)
+    plateau_factor: 0.5  # Reduce LR by 50% on plateau
+    plateau_patience: 5  # Wait 5 epochs before reducing
+    min_lr: 0.00001  # Don't go below this
+
+# Data Augmentation (ENHANCED)
+augmentation:
+  train:
+    random_rotation: 30
+    random_horizontal_flip: 0.5
+    random_vertical_flip: 0.5
+    
+    color_jitter:
+      brightness: 0.4
+      contrast: 0.4
+      saturation: 0.3
+      hue: 0.1
+    
+    random_affine:
+      degrees: 20
+      translate: [0.15, 0.15]
+      scale: [0.85, 1.15]
+    
+    gaussian_blur:
+      kernel_size: 3
+      sigma: [0.1, 2.0]
+    
+    random_noise: 0.02
+    
+    # NEW AUGMENTATIONS
+    random_perspective:
+      distortion_scale: 0.15
+      p: 0.3
+    
+    random_adjust_sharpness:
+      sharpness_factor: 1.5
+      p: 0.3
+  
+  val:
+    enabled: false
+  
+# Data Split
+data_split:
+  train_ratio: 0.8
+  val_ratio: 0.2
+  random_seed: 42
+
+# GPU Configuration
+gpu:
+  device: "cuda"  # Options: cuda, cpu
+  multi_gpu: false  # Enable DataParallel for multi-GPU
+  num_workers: 4  # DataLoader workers
+  pin_memory: true
+
+# Paths
+paths:
+  checkpoint_dir: "./checkpoints"
+  log_dir: "./logs"
+  results_dir: "./results"
+  
+# Logging
+logging:
+  log_interval: 5000  # Print every N batches
+  save_best_only: false  # Save all models >95% accuracy
+  save_interval: 5  # Save checkpoint every N epochs
+  save_threshold: 95.0  # Only save models with val_acc > this value
+
+# Reproducibility
+seed: 42
+
+# Preprocessing Configuration
+preprocess:
+  num_workers: 8  # CPU workers for parallel preprocessing
